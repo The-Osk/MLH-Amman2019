@@ -1,21 +1,27 @@
+#!/bin/pyhton3.6
 import os,sys
 from flask import Flask,request
 from pymessenger import Bot
 app = Flask(__name__)
-counter = 0
-GROOT_TOKEN = "EAAIFsf6srMoBACdZAtOFvrHHaQZAWTGZCTEZBWQg4okuZCiPCZB4mcGZCblUaZAQZBlIZA1uXLzeQibb4dCzG8nksxmXFDXxRMwbDKS5s5ih9mF7VZCqJC6E6bWjjaDHFjCDkFYLZCZA9SFLIhCYaeku2PG8iHoXRZBP3G8TkuC7yfroJmpIHgNyP8hLCN"
 
+
+
+# Set GROOT_TOKEN to Access Token from your APP on Developers.facebook
+
+GROOT_TOKEN = ""
 GROOT = Bot(GROOT_TOKEN)
 
 @app.route('/' , methods=['GET'])
 
 def verify():
-    #Webhook
+    # Webhook
     if request.args.get('hub.mode') == 'subscribe':
         if not request.args.get('hub.verify_token') == "Groot" :
             return "Verification token mismatch" , 403
         return request.args["hub.challenge"], 200
     return "Hello: I am GROOT :D" , 200
+
+
 
 @app.route('/' , methods=['POST'])
 def webhook ():
@@ -34,17 +40,15 @@ def webhook ():
                     recv = "No Text :("
                 # REPLAY
                 replay = "I AM GROOT"
+                if recv.lower() == "we will shut you down":
+                    replay = "WE ARE GROOT"
                 GROOT.send_text_message(SENDER_ID , replay)
 
     return 'ok' , 200
 
 def log (message):
-    global counter
-    print ("----        %d       ----"%(counter%4))
     print (message)
     sys.stdout.flush()
-    print ("\n\n")
-    counter +=1
 
 if __name__ == "__main__":
     app.run(debug=True , port = 80)
